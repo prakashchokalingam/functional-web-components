@@ -3,7 +3,36 @@
 }
 
 .card {
-  border: 1px solid grey;
+  background-color: #fff;
+  box-shadow: 0 2px 8px 0 rgba(166,191,217,.25);
+  margin: 1rem 0;
+  border: 1px solid #f1f5f8;
+  border-radius: .25rem;
+  width: 100%;
   padding: 10px;
-  margin: 10px;
+  font-family: system-ui,BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
 }
+
+.card__link, .card__link:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card__title {
+  font-weight: bold;
+  padding: 5px;
+}
+
+.card__description {
+  padding: 5px;
+}
+
+.card__img img {
+  width: 100%;
+  height: auto;
+  padding: 5px;
+}
+
+
+
+
