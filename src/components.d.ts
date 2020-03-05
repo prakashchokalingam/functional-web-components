@@ -10,16 +10,37 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
+  interface CodeHighlighter {}
+  interface ComponentDocs {}
   interface UrlPreviewCard {
-    'proxyUrl': string;
+    'card': {
+      title: string,
+      description: string,
+      img: string,
+    };
+    'customProxy': boolean;
+    'fetchError': () => Promise<void>;
     'target': string;
+    'updateCard': (card: any) => Promise<void>;
     'url': string;
-    'variant': string;
+    'variant': 'small' | 'large';
   }
 }
 
 declare global {
 
+
+  interface HTMLCodeHighlighterElement extends Components.CodeHighlighter, HTMLStencilElement {}
+  var HTMLCodeHighlighterElement: {
+    prototype: HTMLCodeHighlighterElement;
+    new (): HTMLCodeHighlighterElement;
+  };
+
+  interface HTMLComponentDocsElement extends Components.ComponentDocs, HTMLStencilElement {}
+  var HTMLComponentDocsElement: {
+    prototype: HTMLComponentDocsElement;
+    new (): HTMLComponentDocsElement;
+  };
 
   interface HTMLUrlPreviewCardElement extends Components.UrlPreviewCard, HTMLStencilElement {}
   var HTMLUrlPreviewCardElement: {
@@ -27,19 +48,31 @@ declare global {
     new (): HTMLUrlPreviewCardElement;
   };
   interface HTMLElementTagNameMap {
+    'code-highlighter': HTMLCodeHighlighterElement;
+    'component-docs': HTMLComponentDocsElement;
     'url-preview-card': HTMLUrlPreviewCardElement;
   }
 }
 
 declare namespace LocalJSX {
+  interface CodeHighlighter {}
+  interface ComponentDocs {}
   interface UrlPreviewCard {
-    'proxyUrl'?: string;
+    'card'?: {
+      title: string,
+      description: string,
+      img: string,
+    };
+    'customProxy'?: boolean;
+    'onFetchMeta'?: (event: CustomEvent<any>) => void;
     'target'?: string;
     'url'?: string;
-    'variant'?: string;
+    'variant'?: 'small' | 'large';
   }
 
   interface IntrinsicElements {
+    'code-highlighter': CodeHighlighter;
+    'component-docs': ComponentDocs;
     'url-preview-card': UrlPreviewCard;
   }
 }
@@ -50,6 +83,8 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
+      'code-highlighter': LocalJSX.CodeHighlighter & JSXBase.HTMLAttributes<HTMLCodeHighlighterElement>;
+      'component-docs': LocalJSX.ComponentDocs & JSXBase.HTMLAttributes<HTMLComponentDocsElement>;
       'url-preview-card': LocalJSX.UrlPreviewCard & JSXBase.HTMLAttributes<HTMLUrlPreviewCardElement>;
     }
   }

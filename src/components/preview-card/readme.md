@@ -15,11 +15,42 @@ Show a beautiful preview for the url links
 
 ## Properties
 
-| Property   | Attribute   | Description | Type     | Default                                            |
-| ---------- | ----------- | ----------- | -------- | -------------------------------------------------- |
-| `proxyUrl` | `proxy-url` |             | `string` | `'http://localhost:9000/.netlify/functions/proxy'` |
-| `target`   | `target`    |             | `string` | `"_blank"`                                         |
-| `url`      | `url`       |             | `string` | `""`                                               |
+| Property  | Attribute | Description | Type                                                   | Default                                                 |
+| --------- | --------- | ----------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| `card`    | --        |             | `{ title: string; description: string; img: string; }` | `{     title: '',     description: '',     img: ''   }` |
+| `target`  | `target`  |             | `string`                                               | `"_blank"`                                              |
+| `url`     | `url`     |             | `string`                                               | `""`                                                    |
+| `variant` | `variant` |             | `"large" \| "small"`                                   | `'small'`                                               |
+
+
+## Events
+
+| Event       | Description | Type               |
+| ----------- | ----------- | ------------------ |
+| `fetchMeta` |             | `CustomEvent<any>` |
+
+
+## Methods
+
+### `fetchError() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `updateCard(card: any) => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 
 ----------------------------------------------

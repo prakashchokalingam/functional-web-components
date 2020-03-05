@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  font-family: system-ui,BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+}
+
+.content {
+  display: flex;
+  padding: 10px;
+}
+
+.sidebar {
+  width: 30%;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 10px;
+}
+
+.section-label {
+  color: #16161d;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.content-section {
+  padding-top: 40px;
+}
+
+a,
+a:visited,
+a:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+.card {
+  background-color: #fff;
+  box-shadow: 0 2px 8px 0 rgba(166,191,217,.25);
+  margin: 1rem 0;
+  border: 1px solid #f1f5f8;
+  border-radius: .25rem;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+}
+
+@import "../../../node_modules/highlight.js/styles/tomorrow.css"

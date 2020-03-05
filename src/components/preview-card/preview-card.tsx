@@ -1,11 +1,4 @@
-import { Component, Host, h, Prop, State } from '@stencil/core';
-
-interface Card {
-  title?: string;
-  description?: string;
-  img?: string;
-  host?: string;
-};
+import { Component, Host, h, Prop, State, EventEmitter, Event, Method } from '@stencil/core';
 
 @Component({
   tag: 'url-preview-card',
@@ -15,97 +8,130 @@ interface Card {
 export class PreviewCard {
   // props
   @Prop() url: string = "";
-  @Prop() variant: string = "small";
+  @Prop() variant: 'small' | 'large' = 'small';
   @Prop() target: string = "_blank";
-  @Prop() proxyUrl: string = 'http://localhost:9000/.netlify/functions/proxy';
+  @Prop() customProxy: boolean = false;
+  @Prop() card: {
+    title: string,
+    description: string,
+    img: string,
+  } = {
+    title: '',
+    description: '',
+    img: ''
+  };
 
   // state
-  @State() card: Card = {};
+  @State() host: string;
+  @State() isFetching: boolean = true;
+  @State() error: boolean = false;
+
+  @Event() fetchMeta: EventEmitter;
 
   componentWillLoad() {
     this._constructCard();
   }
 
   render() {
+    let content: any;
+    if (this.isFetching) {
+      content = this._loaderContent();
+    } else if (this.error) {
+      content = this._error();
+    } else if (!this.isFetching) {
+      content = this._card();
+    }
+
     return (
       <Host>
         <a href={this.url} class="card__link" target={this.target} rel="noreferrer">
-          <div class="card">
-            <div class="card__img">
-              <img src={this.card.img} />
-            </div>
-            <div class="card__title">
-              {this.card.title}
-            </div>
-            <div class="card__description">
-              {this.card.description}
-            </div>
-          </div>
+          {content}
         </a>
       </Host>
     );
   }
 
   private async _constructCard() {
-    let data = await this._fetchUrlData();
-    this._parseData(data);
+    let parsed = new URL(this.url);
+    this.host = parsed.hostname;
+    (this.customProxy) ? this.fetchMeta.emit(this.url) : this._fetchData();
   }
 
-  private async _fetchUrlData() {
-    try {
-      let { data } = await fetch(`${this.proxyUrl}?url=${this.url}`, {
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-        }
-      })
-      .then(function (response) {
-        return response.json();
-      });
-      return data;
-    } catch(e) {
-      console.log('Show Error')
-    }
-  }
-
-  private _parseData(data: string) {
-    let $fragment = document.createDocumentFragment();
-    let $wrapper = document.createElement('div');
-    $wrapper.innerHTML = data;
-    $fragment.appendChild($wrapper);
-
-    // title: meta-title | og:title
-    let title: string;
-    if ($fragment.querySelector('titles')) {
-      title = $fragment.querySelector('title').innerText;
-    } else if ($fragment.querySelector('meta[property="og:title"]')) {
-      title = $fragment.querySelector('meta[property="og:title"]').getAttribute('content');
-    }
-
-    // description: meta-description | og:description
-    let description: string;
-    let $content = $fragment.querySelector('meta[name="description"]');
-    if ($content && $content.getAttribute('content')) {
-      description = $content.getAttribute('content');
-    } else if($fragment.querySelector('meta[property="og:description"]')) {
-      description = $fragment.querySelector('meta[property="og:description"]').getAttribute('content')
-    }
-
-    // image: og:image | first-image | favicon
-    let img: string;
-    let $img = $fragment.querySelector('meta[property="og:image"]');
-    if ($img && $img.getAttribute('content')) {
-      img = $img.getAttribute('content');
-    } else if ($fragment.querySelector('img')) {
-      img = $fragment.querySelector('img').getAttribute('src');
-    } else {
-      img = $fragment.querySelector('[rel="icon"]').getAttribute('href');
-    }
-
+  // methods
+  @Method()
+  public updateCard(card: any) {
     this.card = {
-      title,
-      description,
-      img
+      title: card.title,
+      description: card.description,
+      img: card.img
     };
+    this.isFetching = false;
+  }
+
+  @Method()
+  public fetchError() {
+    this.isFetching = false;
+    this.error = true;
+  }
+
+  private async _fetchData() {
+    let proxyUrl = `http://localhost:9000/.netlify/functions/fetch-meta?url=${this.url}`;
+      let {
+        data
+      } = await fetch(proxyUrl).then(response => response.json());
+      console.log(data)
+    // await fetch(`http://localhost:9000/.netlify/functions/fetch-meta?url=${this.url}`, {
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*',
+    //     'Access-Control-Allow-Headers': '*'
+    //   }
+    // }).then(res => res.json())
+  }
+
+  // templates
+  private _loaderContent() {
+    return (
+      <div class="card card--small">
+        <div class="loader">
+          <small class="muted">Fetching preview...</small>
+        </div>
+      </div>
+    );
+  }
+
+  private _error() {
+    return (
+      <div class="card card--small">
+        <div class="loader">
+          <small class="muted error">Failed to load preview.</small>
+          <p class="muted">
+            <small>{this.url}</small>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  private _card() {
+    return (
+      <div class={`card card--${this.variant}`}>
+        <div class={`card__img card__img--${this.variant}`}>
+          <img src={this.card.img} />
+        </div>
+
+        <div class="card__content">
+          <div class="card__title">
+            {this.card.title}
+          </div>
+          <div class="card__host">
+            <small class="muted">{this.host}</small>
+          </div>
+          <div class="card__description muted">
+            {this.card.description}
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 

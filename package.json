@@ -24,6 +24,8 @@
   },
   "devDependencies": {
     "@stencil/core": "^1.8.4",
+    "cheerio": "^1.0.0-rc.3",
+    "highlight.js": "^9.18.1",
     "netlify-lambda": "^1.6.3"
   },
   "license": "MIT"
